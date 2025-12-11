@@ -13,7 +13,7 @@
 # * EIP 생성된 상태에서 작업
 
 resource "aws_eip" "myEIP" {
-  domain = "vpc"
+  domain   = "vpc"
 
   tags = {
     Name = "myEIP"
@@ -40,7 +40,7 @@ resource "aws_subnet" "myPriSN" {
   vpc_id     = aws_vpc.myVPC.id
   cidr_block = "10.0.2.0/24"
 
-  tags = {
+  tags =  {
     Name = "myPriSN"
   }
 }
@@ -60,7 +60,7 @@ resource "aws_route_table" "myPriRT" {
 
   tags = {
     Name = "myPriRT"
-  }
+  } 
 }
 resource "aws_route_table_association" "mypriRT-Association" {
   subnet_id      = aws_subnet.myPriSN.id
@@ -93,7 +93,7 @@ resource "aws_vpc_security_group_ingress_rule" "mySG2_22" {
 
 resource "aws_vpc_security_group_ingress_rule" "mySG2_80" {
   security_group_id = aws_security_group.mySG2.id
-  cidr_ipv4         = aws_vpc.myVPC.cidr_block
+  cidr_ipv4 = aws_vpc.myVPC.cidr_block
   from_port         = 80
   ip_protocol       = "tcp"
   to_port           = 80
@@ -101,7 +101,7 @@ resource "aws_vpc_security_group_ingress_rule" "mySG2_80" {
 
 resource "aws_vpc_security_group_ingress_rule" "mySG2_443" {
   security_group_id = aws_security_group.mySG2.id
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4 = aws_vpc.myVPC.cidr_block
   from_port         = 443
   ip_protocol       = "tcp"
   to_port           = 443
@@ -121,13 +121,14 @@ resource "aws_vpc_security_group_egress_rule" "mySG2_all" {
 # * user_data가 변경 되었을때 재생성하도록 설정
 
 resource "aws_instance" "myEC2-2" {
-  ami                    = "ami-00e428798e77d38d9"
-  instance_type          = "t3.micro"
+  ami           = "ami-00e428798e77d38d9"
+  instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.mySG2.id]
-  subnet_id              = aws_subnet.myPriSN.id
+  subnet_id   = aws_subnet.myPriSN.id
+  key_name = "mykeypair"
 
   user_data_replace_on_change = true
-  user_data                   = <<-EOF
+  user_data = <<-EOF
         #!/bin/bash
         dnf install -y httpd mod_ssl
         echo "My Web Server Test Page" > /var/www/html/index.html  
